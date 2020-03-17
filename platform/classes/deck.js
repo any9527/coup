@@ -23,7 +23,7 @@ class CoupDeck {
   }
 
   _generateDeck() {
-    this.deck = [...CARDS];
+    this.deck = shuffle(CARDS);
   }
 
   _shuffleDeck() {
