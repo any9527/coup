@@ -11,7 +11,7 @@ class CoupPlatform {
 
   init() {
     this._io.on("connection", socket => {
-      console.log("connected", socket.id);
+      console.log("connected", this._users[socket.id]);
 
       socket.on("system.add_user", ({ username }) => {
         if (!username) return;
@@ -24,12 +24,22 @@ class CoupPlatform {
       socket.on("system.add_room", ({ roomName, password }) => {
         if (!roomName) return;
         if (this._rooms[roomName]) return { err: "room exists" };
-        const room = new CoupRoom(roomName, password, socket.id);
+        const room = new CoupRoom(roomName, password, this._users[socket.id]);
         room.print();
       });
 
-      socket.on("room.add_user", ({ name }) => {
-        if (!name) return;
+      socket.on("room.add_user", ({ roomName }) => {
+        if (!roomName) return;
+        const room = this._rooms[roomName];
+        if (!room) return;
+        room.addUser(this._users[socket.id]);
+      });
+
+      socket.on("room.remove_user", ({ roomName }) => {
+        if (!roomName) return;
+        const room = this._rooms[roomName];
+        if (!room) return;
+        room.removeUser(this._users[socket.id]);
       });
 
       socket.on("disconnect", () => {
