@@ -13,6 +13,8 @@ class CoupPlatform {
     this._io.on("connection", socket => {
       console.log("connected", this._users[socket.id]);
 
+      socket.emit("connection", { connected: true });
+
       socket.on("system.add_user", ({ username }) => {
         if (!username) return;
         const user = new CoupUser(username);
