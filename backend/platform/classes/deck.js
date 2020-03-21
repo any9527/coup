@@ -4,30 +4,30 @@ const { shuffle } = require("../utils/methods.js");
 class CoupDeck {
   constructor(type = "regular") {
     this.deck = [];
-    this._generateDeck();
+    this.generateDeck();
   }
 
   drawCards(numOfCards) {
     const cards = [];
-    for (let i = 0; i < numOfCards; i++) {
+    for (let i = 0; i < numOfCards; i += 1) {
       if (!this.deck.length) break;
       cards.push(this.deck.pop());
     }
-    this._shuffleDeck();
+    this.shuffleDeck();
     return cards;
   }
 
   returnCards(cards) {
     this.deck.push(...cards);
-    this._shuffleDeck();
+    this.shuffleDeck();
   }
 
-  _generateDeck() {
+  generateDeck() {
     this.deck = shuffle(CARDS);
   }
 
-  _shuffleDeck() {
-    this.deck = shuffle(deck);
+  shuffleDeck() {
+    this.deck = shuffle(this.deck);
   }
 }
 
