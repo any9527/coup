@@ -1,4 +1,4 @@
-const { deepFreeze } = require("../utils/methods");
+const { deepFreeze } = require("./methods");
 
 const ACTIONS = {
   exchange: {

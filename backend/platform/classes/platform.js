@@ -3,15 +3,15 @@ const CoupRoom = require("./room");
 
 class CoupPlatform {
   constructor(io) {
-    this._rooms = {}; // { roomName: Room, .. }
-    this._users = {}; // { socketId: User, .. }
-    this._namespace = process.env.NAMESPACE || "US";
-    this._io = io.of(this._namespace);
+    this.rooms = {}; // { roomName: Room, .. }
+    this.users = {}; // { socketId: User, .. }
+    this.namespace = process.env.NAMESPACE || "US";
+    this.io = io.of(this.namespace);
   }
 
   init() {
-    this._io.on("connection", socket => {
-      console.log("connected", this._users[socket.id]);
+    this.io.on("connection", socket => {
+      console.log("connected", socket.id);
 
       socket.emit("connection", { connected: true });
 
@@ -19,35 +19,38 @@ class CoupPlatform {
         if (!username) return;
         const user = new CoupUser(username);
         user.print();
-        this._users[socket.id] = user;
+        this.users[socket.id] = user;
         this.print();
       });
 
       socket.on("system.add_room", ({ roomName, password }) => {
         if (!roomName) return;
-        if (this._rooms[roomName]) return { err: "room exists" };
-        const room = new CoupRoom(roomName, password, this._users[socket.id]);
+        if (this.rooms[roomName]) {
+          // socket.emit("error", { err: "room exists" })
+          return;
+        }
+        const room = new CoupRoom(roomName, password, this.users[socket.id]);
         room.print();
       });
 
       socket.on("room.add_user", ({ roomName }) => {
         if (!roomName) return;
-        const room = this._rooms[roomName];
+        const room = this.rooms[roomName];
         if (!room) return;
-        room.addUser(this._users[socket.id]);
+        room.addUser(this.users[socket.id]);
       });
 
       socket.on("room.remove_user", ({ roomName }) => {
         if (!roomName) return;
-        const room = this._rooms[roomName];
+        const room = this.rooms[roomName];
         if (!room) return;
-        room.removeUser(this._users[socket.id]);
+        room.removeUser(this.users[socket.id]);
       });
 
       socket.on("disconnect", () => {
-        const user = this._users[socket.id];
+        const user = this.users[socket.id];
         if (!user) return;
-        delete this._users[socket.id];
+        delete this.users[socket.id];
         this.print();
       });
     });
@@ -60,8 +63,8 @@ class CoupPlatform {
   print() {
     console.log("@".repeat(30));
     console.log("Users: ");
-    Object.keys(this._users).map(socketId => {
-      console.log("name:", this._users[socketId]);
+    Object.keys(this.users).forEach(socketId => {
+      console.log("name:", this.users[socketId]);
     });
     console.log("@".repeat(30));
   }

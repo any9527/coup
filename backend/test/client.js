@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const port = process.env.PORT || 4001;
 const namespace = process.env.NAMESPACE || "US";
 const BACKEND_URL = `http://127.0.0.1:${port}/${namespace}`;
