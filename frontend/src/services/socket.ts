@@ -7,6 +7,15 @@ interface Socket {
 }
 
 class CoupSocket {
+    private static instance: CoupSocket;
+
+    static getInstance(): CoupSocket {
+        if (!CoupSocket.instance) {
+            CoupSocket.instance = new CoupSocket();
+        }
+        return CoupSocket.instance;
+    }
+
     socket: Socket;
     constructor() {
         this.socket = socketIOClient(backendEndpoint);
@@ -17,5 +26,4 @@ class CoupSocket {
     }
 }
 
-const coupSocket = new CoupSocket();
-export default coupSocket;
+export default CoupSocket.getInstance();
