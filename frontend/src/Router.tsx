@@ -1,11 +1,15 @@
 import React, { ReactElement } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch } from 'react-router-dom';
 import Home from './components/home/Home';
+import Lobby from './components/lobby/Lobby';
+
+import { AuthRoute, ProtectedRoute } from './utils/routeUtil';
 
 const Router = (): ReactElement => (
     <Switch>
-        {/* <Route path="/rooms/:id" /> */}
-        <Route path="/" component={Home} />
+        <ProtectedRoute path="/lobby" component={Lobby} />
+        <AuthRoute path="/" component={Home} />
+        {/* <ProtectedRoute path="/rooms/:id" component={Home} /> */}
     </Switch>
 );
 
