@@ -21,8 +21,12 @@ class CoupSocket {
         this.socket = socketIOClient(backendEndpoint);
     }
 
-    emit(eventType: string, data: object): void {
+    emit(eventType: string, data: object = {}): void {
         this.socket.emit(eventType, data);
+    }
+
+    on(eventType: string, cb: (data: { users?: string[] }) => void): void {
+        this.socket.on(eventType, cb);
     }
 }
 
