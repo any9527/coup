@@ -1,7 +1,9 @@
+const uuid = require("uuid");
 const CoupDeck = require("./deck");
 
 class CoupRoom {
   constructor(name, password, creator) {
+    this.id = uuid();
     this.name = name;
     this.capacity = 6;
     this.users = new Set([creator]);
@@ -10,6 +12,10 @@ class CoupRoom {
     this.revealedCards = [];
     this.status = "pending";
     this.currentPlayerIdx = 0;
+  }
+
+  getId() {
+    return this.id;
   }
 
   addUser(user) {

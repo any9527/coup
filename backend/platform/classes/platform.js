@@ -37,11 +37,8 @@ class CoupPlatform {
 
       socket.on("system.add_room", ({ roomName, password }) => {
         if (!roomName) return;
-        if (this.rooms[roomName]) {
-          // socket.emit("error", { err: "room exists" })
-          return;
-        }
         const room = new CoupRoom(roomName, password, this.users[socket.id]);
+        room.emit("system.add_room", { id: room.getId() });
         room.print();
       });
 
