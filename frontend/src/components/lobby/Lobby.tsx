@@ -2,6 +2,7 @@ import React, { useState, useEffect, ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 
 import coupSocket from '../../services/socket';
+import CreateRoom from './CreateRoom';
 
 type Users = string[];
 
@@ -12,7 +13,6 @@ const Lobby = (): ReactElement => {
         // ask for users
         coupSocket.emit('system.get_users');
         coupSocket.on('system.get_users', data => {
-            console.log('data', data);
             setUsers(data.users);
         });
     }, []);
@@ -35,6 +35,7 @@ const Lobby = (): ReactElement => {
                     <li>{u}</li>
                 ))}
             </ul>
+            <CreateRoom />
         </div>
     );
 };
