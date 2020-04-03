@@ -1,6 +1,8 @@
 const CoupUser = require("./user");
 const CoupRoom = require("./room");
 
+const clients = {};
+
 class CoupPlatform {
   constructor(io) {
     this.rooms = {}; // { roomName: Room, .. }
@@ -11,7 +13,14 @@ class CoupPlatform {
 
   init() {
     this.io.on("connection", socket => {
-      console.log("connected", socket.id);
+      console.log("user connected", socket.id);
+      clients[socket.id] = socket;
+
+      const sendUsers = () => {
+        this.io.emit("system.get_users", {
+          users: Object.values(this.users).map(u => u.getName())
+        });
+      };
 
       socket.emit("connection", { connected: true });
 
@@ -21,7 +30,10 @@ class CoupPlatform {
         user.print();
         this.users[socket.id] = user;
         this.print();
+        sendUsers();
       });
+
+      socket.on("system.get_users", sendUsers);
 
       socket.on("system.add_room", ({ roomName, password }) => {
         if (!roomName) return;
@@ -52,6 +64,17 @@ class CoupPlatform {
         if (!user) return;
         delete this.users[socket.id];
         this.print();
+        sendUsers();
+        delete clients[socket.id];
+      });
+
+      socket.on("system.log_out", () => {
+        console.log("log out:", socket.id);
+        const user = this.users[socket.id];
+        if (!user) return;
+        delete this.users[socket.id];
+        this.print();
+        sendUsers();
       });
     });
   }

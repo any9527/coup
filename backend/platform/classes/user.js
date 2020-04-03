@@ -22,6 +22,10 @@ class CoupUser {
     }
   }
 
+  getName() {
+    return this.name;
+  }
+
   addCards(cards) {
     cards.forEach(card => {
       this.cards.add(card);
