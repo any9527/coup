@@ -25,7 +25,7 @@ class CoupSocket {
         this.socket.emit(eventType, data);
     }
 
-    on(eventType: string, cb: (data: { users?: string[] }) => void): void {
+    on(eventType: string, cb: (data: { users?: string[]; id?: string }) => void): void {
         this.socket.on(eventType, cb);
     }
 }
