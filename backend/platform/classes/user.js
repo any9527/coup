@@ -43,7 +43,7 @@ class CoupUser {
   }
 
   addCards(cards) {
-    cards.forEach((card) => {
+    cards.forEach(card => {
       this.cards.add(card);
     });
   }

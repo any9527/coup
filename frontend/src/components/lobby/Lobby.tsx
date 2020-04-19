@@ -49,7 +49,8 @@ const Lobby = (): ReactElement => {
         };
         coupSocket.on(eventType, cb);
         return (): void => coupSocket.off(eventType, cb);
-    });
+    }, [history]);
+
     const handleJoinRoom = (roomId: string): void => {
         const userId = localStorage.getItem('userId');
         coupSocket.emit('room.add_user', { roomId, userId });
