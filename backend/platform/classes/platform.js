@@ -1,8 +1,6 @@
 const CoupUser = require("./user");
 const CoupRoom = require("./room");
 
-// const clients = {};
-
 class CoupPlatform {
   constructor(io) {
     this.rooms = {}; // { roomId: Room, .. }
@@ -16,15 +14,13 @@ class CoupPlatform {
   }
 
   sendUsers(socket, broadcastExceptSelf = true) {
-    console.log("sendUsers called");
     const eventType = "system.get_users";
     const data = {
-      users: Object.values(this.users).map((u) => ({
+      users: Object.values(this.users).map(u => ({
         id: u.id,
-        name: u.getName(),
-      })),
+        name: u.getName()
+      }))
     };
-    console.log("users data:", data);
     if (socket) {
       if (broadcastExceptSelf) {
         socket.broadcast.emit(eventType, data);
@@ -37,15 +33,13 @@ class CoupPlatform {
   }
 
   sendRooms(socket, broadcastExceptSelf = true) {
-    console.log("sendRooms called");
     const eventType = "system.get_rooms";
     const data = {
-      rooms: Object.values(this.rooms).map((r) => ({
+      rooms: Object.values(this.rooms).map(r => ({
         id: r.id,
-        name: r.getName(),
-      })),
+        name: r.getName()
+      }))
     };
-    console.log("users data:", data);
     if (socket) {
       if (broadcastExceptSelf) {
         socket.broadcast.emit(eventType, data);
@@ -58,7 +52,6 @@ class CoupPlatform {
   }
 
   sendRoom(roomId, socket, broadcastExceptSelf = false) {
-    console.log("roomId:", roomId);
     const room = this.rooms[roomId];
     if (!room) {
       console.log("room invalid");
@@ -66,7 +59,6 @@ class CoupPlatform {
     }
     const type = "system.get_room";
     const users = room.getUsers();
-    console.log("users:", users);
     if (!socket) {
       this.io.in(roomId).emit(type, { users });
     } else if (broadcastExceptSelf) {
@@ -77,9 +69,6 @@ class CoupPlatform {
   }
 
   replaceUserSocket(userId, socket) {
-    console.log("\nreplace user socket");
-    console.log("userId:", userId);
-    console.log("socket:", socket.id);
     const user = this.users[userId];
     if (!user) {
       console.log("user not found, ignore");
@@ -89,7 +78,6 @@ class CoupPlatform {
     user.setSocket(socket);
   }
 
-  //
   logOutUser(userId, socket) {
     console.log("logOutUser:", userId);
     // delete user
@@ -99,7 +87,7 @@ class CoupPlatform {
   }
 
   init() {
-    this.io.on("connection", (socket) => {
+    this.io.on("connection", socket => {
       console.log("socket connected:", socket.id);
       if (socket.handshake.query.userId) {
         this.replaceUserSocket(socket.handshake.query.userId, socket);
@@ -109,12 +97,10 @@ class CoupPlatform {
       // if user provides userId, then it's connected before
       // replace the user's socket with new one
       socket.on("system.add_user", ({ username }) => {
-        console.log("### username:", username);
         if (!username) return;
         const user = new CoupUser(username, socket);
         this.users[user.id] = user;
         socket.emit("system.add_user", { id: user.id });
-        console.log("socket emit syste.add_user");
         this.print();
         this.sendUsers(socket);
       });
@@ -128,7 +114,7 @@ class CoupPlatform {
       });
 
       socket.on("system.get_room", ({ roomId }) => {
-        this.sendRoom(roomId, socket, true);
+        this.sendRoom(roomId, socket, false);
       });
 
       socket.on("system.add_room", ({ roomName, password, userId }) => {
@@ -146,8 +132,8 @@ class CoupPlatform {
         const room = this.rooms[roomId];
         if (!room) return;
         room.addUser(this.users[userId]);
-        socket.emit("room.add_user", {});
-        this.sendRoom(roomId, false);
+        socket.emit("room.add_user", { roomId });
+        this.sendRoom(roomId);
       });
 
       socket.on("room.remove_user", ({ roomName }) => {
@@ -179,7 +165,7 @@ class CoupPlatform {
   print() {
     console.log("@".repeat(30));
     console.log("Users: ", Object.keys(this.users).length);
-    Object.keys(this.users).forEach((userId) => {
+    Object.keys(this.users).forEach(userId => {
       console.log("name:", this.users[userId].getName());
     });
     console.log("@".repeat(30));

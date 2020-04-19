@@ -1,11 +1,7 @@
 import React, { useState, useEffect, ReactElement } from 'react';
 
 import coupSocket from '../../services/socket';
-
-type Users = Array<{
-    id: string;
-    name: string;
-}>;
+import { Users } from '../../utils/types';
 
 const Room = (props: {
     match: {
@@ -17,16 +13,16 @@ const Room = (props: {
     const [users, setUsers] = useState<Users | undefined>([]);
 
     useEffect(() => {
+        console.log('useEffect in Room called');
         const eventType = 'system.get_room';
-        console.log('roomId:', props.match.params.id);
-        const cb = (data: { users?: Users }) => {
+        const cb = (data: { users?: Users }): void => {
             console.log('users in room:', data.users);
             setUsers(data.users);
         };
         coupSocket.emit(eventType, { roomId: props.match.params.id });
         coupSocket.on(eventType, cb);
-        return () => coupSocket.off(eventType, cb);
-    }, []);
+        return (): void => coupSocket.off(eventType, cb);
+    }, [props.match.params.id]);
 
     return (
         <div>

@@ -17,6 +17,7 @@ type SocketResponse = {
     }>;
     id?: string;
     success?: boolean;
+    roomId?: string;
 };
 
 interface Socket {

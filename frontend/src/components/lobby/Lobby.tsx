@@ -3,16 +3,7 @@ import { Link, useHistory } from 'react-router-dom';
 
 import coupSocket from '../../services/socket';
 import CreateRoom from './CreateRoom';
-
-type Users = Array<{
-    id: string;
-    name: string;
-}>;
-
-type Rooms = Array<{
-    id: string;
-    name: string;
-}>;
+import { Users, Rooms } from '../../utils/types';
 
 const Lobby = (): ReactElement => {
     const [users, setUsers] = useState<Users | undefined>([]);
@@ -22,24 +13,24 @@ const Lobby = (): ReactElement => {
 
     useEffect(() => {
         const eventType = 'system.get_users';
-        const cb = (data: { users?: Users }) => {
+        const cb = (data: { users?: Users }): void => {
             console.log('data.users:', data.users);
             setUsers(data.users);
         };
         coupSocket.emit(eventType);
         coupSocket.on(eventType, cb);
-        return () => coupSocket.off(eventType, cb);
+        return (): void => coupSocket.off(eventType, cb);
     }, []);
 
     useEffect(() => {
         const eventType = 'system.get_rooms';
-        const cb = (data: { rooms?: Rooms }) => {
+        const cb = (data: { rooms?: Rooms }): void => {
             console.log('data.rooms:', data.rooms);
             setRooms(data.rooms);
         };
         coupSocket.emit(eventType);
         coupSocket.on(eventType, cb);
-        return () => coupSocket.off(eventType, cb);
+        return (): void => coupSocket.off(eventType, cb);
     }, []);
 
     const handleLogout = (): void => {
@@ -48,13 +39,20 @@ const Lobby = (): ReactElement => {
         localStorage.clear();
     };
 
+    useEffect(() => {
+        const eventType = 'room.add_user';
+        const cb = (data: { roomId?: string }): void => {
+            console.log('room add user result:', data);
+            if (data.roomId) {
+                history.push(`/rooms/${data.roomId}`);
+            }
+        };
+        coupSocket.on(eventType, cb);
+        return (): void => coupSocket.off(eventType, cb);
+    });
     const handleJoinRoom = (roomId: string): void => {
         const userId = localStorage.getItem('userId');
         coupSocket.emit('room.add_user', { roomId, userId });
-        coupSocket.on('room.add_user', (data: {}) => {
-            console.log('room add user result:', data);
-            history.push(`/rooms/${roomId}`);
-        });
     };
 
     return (
