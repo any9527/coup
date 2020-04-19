@@ -1,4 +1,4 @@
-const uuid = require("uuid");
+const uuid = require("uuid/v4");
 const CoupDeck = require("./deck");
 
 class CoupRoom {
@@ -12,13 +12,30 @@ class CoupRoom {
     this.revealedCards = [];
     this.status = "pending";
     this.currentPlayerIdx = 0;
+    creator.joinRoom(this.id);
   }
 
   getId() {
     return this.id;
   }
 
+  getName() {
+    return this.name;
+  }
+
+  getUsers() {
+    const users = [];
+    this.users.forEach((u) =>
+      users.push({
+        id: u.getId(),
+        name: u.getName(),
+      })
+    );
+    return users;
+  }
+
   addUser(user) {
+    user.joinRoom(this.id);
     this.users.add(user);
   }
 
@@ -29,8 +46,8 @@ class CoupRoom {
   print() {
     console.log("=".repeat(30));
     console.log("room name:", this.name);
-    this.users.forEach(user => {
-      console.log("user:", user);
+    this.users.forEach((user) => {
+      console.log("user:", user.getId(), user.name);
     });
     console.log("=".repeat(30));
   }
@@ -39,7 +56,7 @@ class CoupRoom {
 
   checkNumReadyUsers() {
     let count = 0;
-    this.users.forEach(user => {
+    this.users.forEach((user) => {
       if (user.status === "ready") {
         count += 1;
       }
@@ -51,7 +68,7 @@ class CoupRoom {
     if (this.status === "playing") return;
     if (this.checkNumReadyUsers() < 2) return;
     this.status = "playing";
-    this.users.forEach(user => {
+    this.users.forEach((user) => {
       user.addCoins(2);
       user.addCards(this.deck.drawCards(2));
     });

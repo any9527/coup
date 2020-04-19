@@ -21,14 +21,15 @@ const CreateRoom = (): ReactElement => {
     useEffect(() => {
         socket.on('system.add_room', data => {
             const { id } = data;
-            console.log(data);
+            console.log('room id:', id);
             history.push(`/rooms/${id}`);
         });
-    }, []);
+    }, [history]);
 
     const handleSubmit = (e: FormEvent): void => {
         e.preventDefault();
-        socket.emit('system.add_room', { roomName: name, password });
+        const userId = localStorage.getItem('userId');
+        socket.emit('system.add_room', { roomName: name, password, userId });
     };
 
     const handleChange = (e: ChangeEvent): void => {

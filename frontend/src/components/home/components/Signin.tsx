@@ -14,9 +14,16 @@ const Signin = (): ReactElement => {
     const handleSubmit = (e: FormEvent): void => {
         e.preventDefault();
         try {
-            coupSocket.emit('system.add_user', { username });
-            localStorage.setItem('username', username);
-            history.push('/lobby');
+            const eventType = 'system.add_user';
+            coupSocket.emit(eventType, { username });
+            coupSocket.on(eventType, (data: { id?: string }) => {
+                console.log('system.add_user:', data.id);
+                if (data.id) {
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('userId', data.id);
+                    history.push('/lobby');
+                }
+            });
         } catch (error) {
             throw error;
         }
