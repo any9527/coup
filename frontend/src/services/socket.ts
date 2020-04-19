@@ -1,24 +1,6 @@
 import socketIOClient from 'socket.io-client';
+import { Users, SocketResponse } from '../utils/types';
 const backendEndpoint = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4001/US';
-
-type Users = Array<{
-    id: string;
-    name: string;
-}>;
-
-type SocketResponse = {
-    users?: Array<{
-        id: string;
-        name: string;
-    }>;
-    rooms?: Array<{
-        id: string;
-        name: string;
-    }>;
-    id?: string;
-    success?: boolean;
-    roomId?: string;
-};
 
 interface Socket {
     on(event: string, callback: (data: { users?: Users; id?: string }) => void): void;
