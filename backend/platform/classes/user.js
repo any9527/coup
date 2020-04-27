@@ -1,9 +1,21 @@
+const uuid = require("uuid/v4");
+
 class CoupUser {
-  constructor(name) {
+  constructor(name, socket) {
+    this.id = uuid();
     this.name = name;
+    this.socket = socket;
     this.coins = 0;
     this.cards = new Set();
     this.status = "pending";
+  }
+
+  setSocket(socket) {
+    this.socket = socket;
+  }
+
+  joinRoom(roomId) {
+    this.socket.join(roomId);
   }
 
   updateStatus(status) {
@@ -20,6 +32,10 @@ class CoupUser {
     } else {
       this.coins -= numOfCoins;
     }
+  }
+
+  getId() {
+    return this.id;
   }
 
   getName() {

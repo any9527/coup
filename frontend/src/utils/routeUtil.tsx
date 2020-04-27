@@ -7,10 +7,10 @@ interface PrivateRouteProps extends RouteProps {
 type RenderComponent = (props: RouteComponentProps<any>) => React.ReactNode;
 
 export const ProtectedRoute = (props: PrivateRouteProps): React.ReactElement => {
-    const username = localStorage.getItem('username');
+    const userId = localStorage.getItem('userId');
     const { component: Component, ...rest }: PrivateRouteProps = props;
     const renderComponent: RenderComponent = props => {
-        if (username) {
+        if (userId) {
             return <Component {...props} />;
         }
         return <Redirect to="/" />;
@@ -19,10 +19,10 @@ export const ProtectedRoute = (props: PrivateRouteProps): React.ReactElement => 
 };
 
 export const AuthRoute = (props: PrivateRouteProps): React.ReactElement => {
-    const username = localStorage.getItem('username');
+    const userId = localStorage.getItem('userId');
     const { component: Component, ...rest }: PrivateRouteProps = props;
     const renderComponent: RenderComponent = props => {
-        if (!username) {
+        if (!userId) {
             return <Component {...props} />;
         }
         return <Redirect to="/lobby" />;
