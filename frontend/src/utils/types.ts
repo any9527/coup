@@ -1,6 +1,12 @@
+export type Card = 'Assassin' | 'Captain' | 'Ambassador' | 'Duke' | 'Contessa';
+export type Cards = Array<Card>;
+
 export type User = {
     id: string;
     name: string;
+    status: string;
+    coins: number;
+    cards: Cards;
 };
 export type Users = Array<User>;
 
@@ -17,4 +23,8 @@ export type SocketResponse = {
     id?: string;
     success?: boolean;
     roomId?: string;
+    creatorId?: string;
+    status?: string;
+    cards: Cards;
+    coins: number;
 };

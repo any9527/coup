@@ -6,37 +6,46 @@ class CoupRoom {
     this.id = uuid();
     this.name = name;
     this.capacity = 6;
+    this.creatorId = creator.id;
     this.users = new Set([creator]);
     this.password = password;
     this.deck = new CoupDeck();
     this.revealedCards = [];
     this.status = "pending";
     this.currentPlayerIdx = 0;
-    creator.joinRoom(this.id);
+    this.initSocket(creator);
   }
 
-  getId() {
-    return this.id;
-  }
-
-  getName() {
-    return this.name;
+  initSocket(user) {
+    user.joinRoom(this.id);
+    user.socket.on("room.start_game", () => {
+      console.log("ROOM.START_GAME");
+      this.startGame();
+      const users = this.getUsers();
+      // send to everyone
+      this.users.forEach(u => {
+        u.socket.emit("room.game_started", { users, status: this.status });
+      });
+    });
   }
 
   getUsers() {
     const users = [];
     this.users.forEach(u =>
       users.push({
-        id: u.getId(),
-        name: u.getName()
+        id: u.id,
+        name: u.name,
+        status: u.status,
+        coins: u.coins,
+        cards: Array.from(u.cards)
       })
     );
     return users;
   }
 
   addUser(user) {
-    user.joinRoom(this.id);
     this.users.add(user);
+    this.initSocket(user);
   }
 
   removeUser(user) {
@@ -47,7 +56,7 @@ class CoupRoom {
     console.log("=".repeat(30));
     console.log("room name:", this.name);
     this.users.forEach(user => {
-      console.log("user:", user.getId(), user.name);
+      console.log("user:", user.id, user.name);
     });
     console.log("=".repeat(30));
   }
