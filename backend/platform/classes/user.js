@@ -7,7 +7,7 @@ class CoupUser {
     this.socket = socket;
     this.coins = 0;
     this.cards = new Set();
-    this.status = "pending";
+    this.status = "ready";
   }
 
   setSocket(socket) {
@@ -32,14 +32,6 @@ class CoupUser {
     } else {
       this.coins -= numOfCoins;
     }
-  }
-
-  getId() {
-    return this.id;
-  }
-
-  getName() {
-    return this.name;
   }
 
   addCards(cards) {

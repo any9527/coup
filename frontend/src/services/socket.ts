@@ -1,10 +1,10 @@
 import socketIOClient from 'socket.io-client';
-import { Users, SocketResponse } from '../utils/types';
+import { SocketResponse } from '../utils/types';
 const backendEndpoint = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4001/US';
 
 interface Socket {
-    on(event: string, callback: (data: { users?: Users; id?: string }) => void): void;
-    off(event: string, callback: (data: object) => void): void;
+    on(event: string, callback: (data: SocketResponse) => void): void;
+    off(event: string, callback: (data: SocketResponse) => void): void;
     emit(event: string, data: object): void;
 }
 

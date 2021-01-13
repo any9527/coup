@@ -18,7 +18,7 @@ class CoupPlatform {
     const data = {
       users: Object.values(this.users).map(u => ({
         id: u.id,
-        name: u.getName()
+        name: u.name
       }))
     };
     if (socket) {
@@ -37,7 +37,7 @@ class CoupPlatform {
     const data = {
       rooms: Object.values(this.rooms).map(r => ({
         id: r.id,
-        name: r.getName()
+        name: r.name
       }))
     };
     if (socket) {
@@ -58,13 +58,17 @@ class CoupPlatform {
       return;
     }
     const type = "system.get_room";
-    const users = room.getUsers();
+    const roomInfo = {
+      users: room.getUsers(),
+      status: room.status,
+      creatorId: room.creatorId
+    };
     if (!socket) {
-      this.io.in(roomId).emit(type, { users });
+      this.io.in(roomId).emit(type, roomInfo);
     } else if (broadcastExceptSelf) {
-      socket.to(roomId).emit(type, { users });
+      socket.to(roomId).emit(type, roomInfo);
     } else {
-      socket.emit(type, { users });
+      socket.emit(type, roomInfo);
     }
   }
 
@@ -120,7 +124,7 @@ class CoupPlatform {
       socket.on("system.add_room", ({ roomName, password, userId }) => {
         if (!roomName) return;
         const room = new CoupRoom(roomName, password, this.users[userId]);
-        const roomId = room.getId();
+        const roomId = room.id;
         socket.emit("system.add_room", { id: roomId });
         this.rooms[roomId] = room;
         this.sendRooms(socket);
@@ -166,7 +170,7 @@ class CoupPlatform {
     console.log("@".repeat(30));
     console.log("Users: ", Object.keys(this.users).length);
     Object.keys(this.users).forEach(userId => {
-      console.log("name:", this.users[userId].getName());
+      console.log("name:", this.users[userId].name);
     });
     console.log("@".repeat(30));
   }
